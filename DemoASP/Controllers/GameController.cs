@@ -7,19 +7,19 @@ namespace DemoASP.Controllers
 {
     public class GameController : Controller
    {
-        private readonly GameService _gameService;
-        public GameController(GameService gameService)
+        private readonly GameDbService _gameService;
+        public GameController(GameDbService gameService)
         {
             _gameService = gameService;
         }
 
         public IActionResult Index()
       {
-         return View(_gameService.GetList());
+         return View(_gameService.ReadAll());
       }
       public IActionResult Details(int id)
       {
-         return View(_gameService.GetGameByid(id));
+         return View(_gameService.ReadOne(id));
       }
       public IActionResult Create()
       {
@@ -28,23 +28,23 @@ namespace DemoASP.Controllers
       [HttpPost]
       public IActionResult Create(Game g)
       {
-         _gameService.AddGame(g);
+         _gameService.Create(g);
          return RedirectToAction("Index");
       }
 
       public IActionResult Delete(int id) 
       {
-         _gameService.RemoveGame(id);
+         if(_gameService.Delete(id)) return RedirectToAction("Index");
          return View();
       }
       public IActionResult Edit( int id)
       {
-         return View(_gameService.GetGameByid(id));
+         return View(_gameService.ReadOne(id));
       }
       [HttpPost]
       public IActionResult Edit(Game g)
       {
-         _gameService.EditGame(g);
+         _gameService.Update(g);
          return View();
       }
    }
