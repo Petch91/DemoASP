@@ -26,7 +26,7 @@ namespace DemoASP.Services
                         "Email," +
                         "Password) " +
                         "OUTPUT INSERTED.*" +
-                        " VALUES (@name,@email,@password)";
+                        " VALUES (@name,@email,HASHBYTES('MD5', @password))";
          SqlParameter[] parameters =
          {
             GenerateParameter("name",entity.UserName),
