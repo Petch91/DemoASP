@@ -9,6 +9,6 @@ namespace DemoASP.Models
       public string Title { get; set; }
       public DateTime DateDeSortie { get; set; }
       public string Genre { get; set; }
-      public string Resume { get; set; }
+      public string? Resume { get; set; }
    }
 }

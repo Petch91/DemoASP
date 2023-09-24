@@ -15,12 +15,7 @@ namespace GamesDataAccessLayer.Services
       private string _connectionString = @"Data Source=DESKTOP-T1P11FV;Initial Catalog=GameDB2;Integrated Security=True;";
       private string _table;
       private string _idColName;
-      protected SqlConnection _cnx { get; set; }
-
-      protected SqlConnection CreateConnection()
-      {
-         return new SqlConnection(_connectionString);
-      }
+      private SqlConnection _cnx;
 
       protected SqlCommand _cmd;
 
@@ -28,20 +23,18 @@ namespace GamesDataAccessLayer.Services
       {
          _table = table;
          _idColName = idcolname;
+         _cnx = new SqlConnection(_connectionString);
       }
-      
+
       protected int ExecuteNonQuery(string sqlRequest)
       {
          int row;
-         using (_cnx = CreateConnection())
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
-            {
-               _cmd.CommandText = sqlRequest;
-               _cnx.Open();
-               row = _cmd.ExecuteNonQuery();
-               _cnx.Close();
-            }
+            _cmd.CommandText = sqlRequest;
+            _cnx.Open();
+            row = _cmd.ExecuteNonQuery();
+            _cnx.Close();
          }
          return row;
       }
@@ -49,98 +42,128 @@ namespace GamesDataAccessLayer.Services
       protected int ExecuteNonQuery(string sqlRequest, SqlParameter[] parameters)
       {
          int row;
-         using (_cnx = CreateConnection())
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
-            {
-               _cmd.CommandText = sqlRequest;
-               _cmd.Parameters.AddRange(parameters);
-               _cnx.Open();
-               row = _cmd.ExecuteNonQuery();
-               _cnx.Close();
-            }
+            _cmd.CommandText = sqlRequest;
+            _cmd.Parameters.AddRange(parameters);
+            _cnx.Open();
+            row = _cmd.ExecuteNonQuery();
+            _cnx.Close();
          }
+
          return row;
       }
       protected object ExecuteScalar(string sqlRequest)
       {
          object result;
-         using (_cnx = CreateConnection())
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
-            {
-               _cmd.CommandText = sqlRequest;
-               _cnx.Open();
-               result = _cmd.ExecuteScalar();
-               _cnx.Close();
-            }
+            _cmd.CommandText = sqlRequest;
+            _cnx.Open();
+            result = _cmd.ExecuteScalar();
+            _cnx.Close();
          }
+
          return result;
       }
       protected object ExecuteScalar(string sqlRequest, SqlParameter[] parameters)
       {
          object result;
-         using (_cnx = CreateConnection())
+
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
-            {
-               _cmd.CommandText = sqlRequest;
-               _cmd.Parameters.AddRange(parameters);
-               _cnx.Open();
-               result = _cmd.ExecuteScalar();
-               _cnx.Close();
-            }
+            _cmd.CommandText = sqlRequest;
+            _cmd.Parameters.AddRange(parameters);
+            _cnx.Open();
+            result = _cmd.ExecuteScalar();
+            _cnx.Close();
+
+            return result;
          }
-         return result;
       }
       protected List<T> ExecuteReader<T>(string sqlRequest, Func<SqlDataReader, T> mapper)
       {
          List<T> list = new List<T>();
-         using (_cnx = CreateConnection())
+
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
+            _cmd.CommandText = sqlRequest;
+            _cnx.Open();
+            using (SqlDataReader reader = _cmd.ExecuteReader())
             {
-               _cmd.CommandText = sqlRequest;
-               _cnx.Open();
-               using (SqlDataReader reader = _cmd.ExecuteReader())
+               while (reader.Read())
                {
-                  while (reader.Read())
-                  {
-                     list.Add(mapper(reader));
-                  }
+                  list.Add(mapper(reader));
                }
-               _cnx.Close();
             }
+            _cnx.Close();
          }
          return list;
       }
       protected List<T> ExecuteReader<T>(string sqlRequest, SqlParameter[] parameters, Func<SqlDataReader, T> mapper)
       {
          List<T> list = new List<T>();
-         using (_cnx = CreateConnection())
+
+         using (_cmd = _cnx.CreateCommand())
          {
-            using (_cmd = _cnx.CreateCommand())
+            _cmd.CommandText = sqlRequest;
+            _cmd.Parameters.AddRange(parameters);
+            _cnx.Open();
+            using (SqlDataReader reader = _cmd.ExecuteReader())
             {
-               _cmd.CommandText = sqlRequest;
-               _cmd.Parameters.AddRange(parameters);
-               _cnx.Open();
-               using (SqlDataReader reader = _cmd.ExecuteReader())
+               while (reader.Read())
                {
-                  while (reader.Read())
-                  {
-                     list.Add(mapper(reader));
-                  }
+                  list.Add(mapper(reader));
                }
-               _cnx.Close();
             }
+            _cnx.Close();
          }
          return list;
+      }
+      protected T ExecuteReaderOneElement<T>(string sqlRequest, Func<SqlDataReader, T> mapper)
+      {
+         T t = default(T);
+
+         using (_cmd = _cnx.CreateCommand())
+         {
+            _cmd.CommandText = sqlRequest;
+            _cnx.Open();
+            using (SqlDataReader reader = _cmd.ExecuteReader())
+            {
+               if (reader.Read())
+               {
+                  t = mapper(reader);
+               }
+            }
+            _cnx.Close();
+         }
+         return t;
+      }
+      protected T ExecuteReaderOneElement<T>(string sqlRequest, SqlParameter[] parameters, Func<SqlDataReader, T> mapper)
+      {
+         T t  = default(T);
+
+         using (_cmd = _cnx.CreateCommand())
+         {
+            _cmd.CommandText = sqlRequest;
+            _cmd.Parameters.AddRange(parameters);
+            _cnx.Open();
+            using (SqlDataReader reader = _cmd.ExecuteReader())
+            {
+               if (reader.Read())
+               {
+                  t = mapper(reader);
+               }
+            }
+            _cnx.Close();
+         }
+         return t;
       }
       protected SqlParameter GenerateParameter(string name, object value)
       {
          return new SqlParameter(name, value ?? DBNull.Value);
       }
-      public abstract TEntity Convert(SqlDataReader record);
+      public abstract TEntity Mapper(SqlDataReader record);
 
       public abstract TEntity Create(TEntity entity);
 
@@ -156,15 +179,15 @@ namespace GamesDataAccessLayer.Services
          {
             GenerateParameter("id",id),
          };
-         IEnumerable<TEntity> entities = ExecuteReader<TEntity>(sql, parameters, reader => Convert(reader));
-         return entities.Count() > 0 ? entities.First() : null;
+         TEntity entity = ExecuteReaderOneElement<TEntity>(sql, parameters, reader => Mapper(reader));
+         return entity;
       }
 
       public IEnumerable<TEntity> ReadAll()
       {
          string sql = "SELECT * FROM " + _table;
 
-         IEnumerable<TEntity> entities = ExecuteReader<TEntity>(sql, reader => Convert(reader));
+         IEnumerable<TEntity> entities = ExecuteReader<TEntity>(sql, reader => Mapper(reader));
          return entities;
       }
 

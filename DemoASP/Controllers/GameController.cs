@@ -1,5 +1,6 @@
 ﻿using DemoASP.Models;
 using DemoASP.Services;
+using DemoASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
@@ -7,8 +8,8 @@ namespace DemoASP.Controllers
 {
     public class GameController : Controller
    {
-        private readonly GameDbService _gameService;
-        public GameController(GameDbService gameService)
+        private readonly IGameService _gameService;
+        public GameController(IGameService gameService)
         {
             _gameService = gameService;
         }

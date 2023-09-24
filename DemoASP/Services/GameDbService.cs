@@ -1,17 +1,18 @@
 ﻿using DemoASP.Models;
+using DemoASP.Services.Interfaces;
 using GamesDataAccessLayer.Services;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace DemoASP.Services
 {
-   public class GameDbService : Service<int, Game>
+   public class GameDbService : Service<int, Game>,  IGameService,IGamePublicService
    {
       public GameDbService() : base("Game", "Id")
       {
       }
 
-      public override Game Convert(SqlDataReader record)
+      public override Game Mapper(SqlDataReader record)
       {
          return new Game
          {
@@ -38,7 +39,7 @@ namespace DemoASP.Services
             GenerateParameter("date", entity.DateDeSortie),
             GenerateParameter("genre", entity.Genre)
          };
-         IEnumerable<Game> games = ExecuteReader<Game>(sql, parameters, reader => Convert(reader));
+         IEnumerable<Game> games = ExecuteReader<Game>(sql, parameters, reader => Mapper(reader));
          return games.Count() > 0 ? games.First() : new Game();
       }
 

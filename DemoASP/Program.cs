@@ -1,11 +1,14 @@
+using DemoASP.Models;
 using DemoASP.Services;
+using DemoASP.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<GameService>();
-builder.Services.AddScoped<GameDbService>();
+builder.Services.AddScoped<IGameService,GameDbService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();
