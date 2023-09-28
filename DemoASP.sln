@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoASP", "DemoASP\DemoASP.
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "GameDB", "GameDB\GameDB.sqlproj", "{FCD42E0F-5CB5-43FD-ABE5-6C3658A0591F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{43223C11-C51A-4FAD-A054-5AF4F5FAD39B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{FCD42E0F-5CB5-43FD-ABE5-6C3658A0591F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCD42E0F-5CB5-43FD-ABE5-6C3658A0591F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FCD42E0F-5CB5-43FD-ABE5-6C3658A0591F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{43223C11-C51A-4FAD-A054-5AF4F5FAD39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43223C11-C51A-4FAD-A054-5AF4F5FAD39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43223C11-C51A-4FAD-A054-5AF4F5FAD39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43223C11-C51A-4FAD-A054-5AF4F5FAD39B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

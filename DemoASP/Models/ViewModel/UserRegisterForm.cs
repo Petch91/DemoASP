@@ -10,7 +10,7 @@ namespace DemoASP.Models.ViewModel
       [EmailAddress]
       public string Email { get; set; }
       [DataType(DataType.Password)]
-     // [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")]
+      [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$")]
       public string Password { get; set; }
       [DataType(DataType.Password)]
       [Compare(nameof(Password), ErrorMessage = "Les 2 mots de passe doivent correspondre")]

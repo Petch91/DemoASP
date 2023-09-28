@@ -1,15 +1,16 @@
 using DemoASP.Models;
 using DemoASP.Services;
 using DemoASP.Services.Interfaces;
+using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<SqlConnection>(pc => new SqlConnection(builder.Configuration.GetConnectionString("default")));
 builder.Services.AddSingleton<GameService>();
 builder.Services.AddScoped<IGameService,GameDbService>();
-builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

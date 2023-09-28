@@ -8,7 +8,7 @@ namespace DemoASP.Services
 {
    public class GameDbService : Service<int, Game>,  IGameService,IGamePublicService
    {
-      public GameDbService() : base("Game", "Id")
+      public GameDbService(SqlConnection cnx) : base(cnx,"Game", "Id")
       {
       }
 
@@ -39,8 +39,8 @@ namespace DemoASP.Services
             GenerateParameter("date", entity.DateDeSortie),
             GenerateParameter("genre", entity.Genre)
          };
-         IEnumerable<Game> games = ExecuteReader<Game>(sql, parameters, reader => Mapper(reader));
-         return games.Count() > 0 ? games.First() : new Game();
+         Game game = ExecuteReaderOneElement<Game>(sql, parameters, reader => Mapper(reader));
+         return game;
       }
 
       public override bool Update(Game entity)
