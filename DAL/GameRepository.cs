@@ -6,9 +6,9 @@ using System.Data.SqlClient;
 
 namespace DemoASP.Services
 {
-   public class GameDbService : Service<int, Game>,  IGameService,IGamePublicService
+   public class GameRepository : BaseRepository<int, Game>,  IGameRepository
    {
-      public GameDbService(SqlConnection cnx) : base(cnx,"Game", "Id")
+      public GameRepository(SqlConnection cnx) : base(cnx,"Game", "Id")
       {
       }
 
@@ -39,7 +39,7 @@ namespace DemoASP.Services
             GenerateParameter("date", entity.DateDeSortie),
             GenerateParameter("genre", entity.Genre)
          };
-         Game game = ExecuteReaderOneElement<Game>(sql, parameters, reader => Mapper(reader));
+         Game game = ExecuteReaderOneElement<Game>(sql, CommandType.Text, parameters, reader => Mapper(reader));
          return game;
       }
 
@@ -54,7 +54,7 @@ namespace DemoASP.Services
             GenerateParameter("date", entity.DateDeSortie),
             GenerateParameter("id",entity.Id)
          };
-         return ExecuteNonQuery(sql, parameters) != 0;
+         return ExecuteNonQuery(sql, CommandType.Text, parameters) != 0;
       }
    }
 }

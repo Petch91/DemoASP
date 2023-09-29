@@ -3,7 +3,7 @@ using DemoASP.Models;
 
 namespace DemoASP.Services.Interfaces
 {
-   public interface IGamePublicService : IBasePublicService<int,Game>
+   public interface IGameRepository : IBaseRepository<int,Game>
    {
    }
 }

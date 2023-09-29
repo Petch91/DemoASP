@@ -1,8 +1,7 @@
-﻿
-using DemoASP.Models;
+﻿using DemoASP.Models;
 using DemoASP.Models.ViewModel;
 using DemoASP.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using DemoASP.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoASP.Controllers
@@ -10,11 +9,13 @@ namespace DemoASP.Controllers
    public class UserController : Controller
    {
       private readonly IUserRepository _userRepository;
-      public UserController(IUserRepository userRepository)
+      private readonly SessionManager _session;
+      public UserController(IUserRepository userRepository, SessionManager session)
       {
          _userRepository = userRepository;
+         _session = session;
       }
-      public IActionResult Index([FromRoute] Guid id)
+      public IActionResult Index(Guid id)
       {
          
          return View(_userRepository.ReadOne(id));
@@ -51,13 +52,20 @@ namespace DemoASP.Controllers
          try
          {
             User u = _userRepository.Login(user.Email, user.Password);
-            return RedirectToAction("Index",new { id = u.Id });
+            _session.ConnectedUser = u;
+            return RedirectToAction("Index",new { id = _session.ConnectedUser.Id });
          }
          catch(Exception ex) 
          {
             TempData["error"] = ex.Message;
             return View();
          }
+      }
+
+      public IActionResult Logout()
+      {
+         _session.Logout();
+         return RedirectToAction("Index", "Home");
       }
    }
 }

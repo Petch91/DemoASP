@@ -1,51 +1,49 @@
 ﻿using DemoASP.Models;
-using DemoASP.Services;
 using DemoASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DemoASP.Controllers
 {
-    public class GameController : Controller
+   public class GameController : Controller
    {
-        private readonly IGameService _gameService;
-        public GameController(IGameService gameService)
+        private readonly IGameRepository _gameRepository;
+        public GameController(IGameRepository gameRepository)
         {
-            _gameService = gameService;
+            _gameRepository = gameRepository;
         }
 
         public IActionResult Index()
       {
-         return View(_gameService.ReadAll());
+         return View(_gameRepository.ReadAll());
       }
       public IActionResult Details(int id)
       {
-         return View(_gameService.ReadOne(id));
+         return View(_gameRepository.ReadOne(id));
       }
       public IActionResult Create()
-      {
+      {        
          return View();
       }
       [HttpPost]
       public IActionResult Create(Game g)
       {
-         _gameService.Create(g);
+         _gameRepository.Create(g);
          return RedirectToAction("Index");
       }
 
       public IActionResult Delete(int id) 
       {
-         if(_gameService.Delete(id)) return RedirectToAction("Index");
+         if(_gameRepository.Delete(id)) return RedirectToAction("Index");
          return View();
       }
       public IActionResult Edit( int id)
       {
-         return View(_gameService.ReadOne(id));
+         return View(_gameRepository.ReadOne(id));
       }
       [HttpPost]
       public IActionResult Edit(Game g)
       {
-         _gameService.Update(g);
+         _gameRepository.Update(g);
          return View();
       }
    }

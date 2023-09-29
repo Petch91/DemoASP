@@ -1,16 +1,23 @@
 using DemoASP.Models;
 using DemoASP.Services;
 using DemoASP.Services.Interfaces;
+using DemoASP.Tools;
 using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<SqlConnection>(pc => new SqlConnection(builder.Configuration.GetConnectionString("default")));
-builder.Services.AddSingleton<GameService>();
-builder.Services.AddScoped<IGameService,GameDbService>();
+builder.Services.AddTransient<SqlConnection>(pc => new SqlConnection(builder.Configuration.GetConnectionString("home")));
+//builder.Services.AddSingleton<GameService>();
+builder.Services.AddScoped<IGameRepository,GameRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<SessionManager>();
 
 var app = builder.Build();
 
@@ -24,6 +31,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 

@@ -1,4 +1,6 @@
-﻿@model DemoASP.Models.Game
+﻿@using DemoASP.Tools;
+@model DemoASP.Models.Game
+@inject SessionManager session;
 
 @{
     ViewData["Title"] = "Details";
@@ -37,6 +39,7 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+
+    @if(session.ConnectedUser is not null)@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     <a asp-action="Index">Back to List</a>
 </div>

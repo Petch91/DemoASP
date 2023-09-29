@@ -14,3 +14,12 @@ INSERT INTO GAME (Title, [Resume], DateSortie, Genre)
 
 INSERT INTO GAME (Title, [Resume], DateSortie, Genre)
        VALUES ('Fallout 2','Bethesda game','1995-10-22','aventure')
+
+exec UserRegister 'admin@gmail.com','Pouyette91','Admin'
+
+exec UserRegister 'petch@gmail.com','Pouyette91','Petch'
+
+UPDATE Users
+SET RoleId = 3
+Where Id = (SELECT TOP 1 Id
+FROM Users)
