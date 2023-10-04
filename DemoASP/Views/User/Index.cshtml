@@ -1,5 +1,6 @@
-﻿@model DemoASP.Models.User
-
+﻿@model DAL.Models.User
+@using DemoASP.Tools;
+@inject SessionManager session;
 @{
     ViewData["Title"] = "Index";
 }
@@ -7,3 +8,10 @@
 <h1>Welcome</h1>
 
 <h4>@Model.UserName</h4>
+
+@{
+   if (session.ConnectedUser is not null)
+   {
+      @Html.ActionLink("Yours Favoris Games", "FavList", new {  id= session.ConnectedUser.Id })
+   }
+}

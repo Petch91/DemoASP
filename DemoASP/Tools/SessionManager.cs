@@ -1,4 +1,4 @@
-﻿using DemoASP.Models;
+﻿using DAL.Models;
 using Newtonsoft.Json;
 
 namespace DemoASP.Tools

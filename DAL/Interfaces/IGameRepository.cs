@@ -1,9 +1,11 @@
-﻿using BibliothequeDAL.Repos;
-using DemoASP.Models;
+﻿
+using DAL.Models;
 
-namespace DemoASP.Services.Interfaces
+namespace DAL.Interfaces
 {
    public interface IGameRepository : IBaseRepository<int,Game>
    {
+      Dictionary<string, List<Game>> GamesByGenre();
+      void AddGameToFavList(Guid userId, int gameId);
    }
 }

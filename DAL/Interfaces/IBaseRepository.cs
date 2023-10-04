@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BibliothequeDAL.Repos
+namespace DAL.Interfaces
 {
    public interface IBaseRepository<TKey,TEntity> where TEntity : class
    {

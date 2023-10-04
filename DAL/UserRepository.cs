@@ -1,11 +1,12 @@
-﻿using DemoASP.Models;
-using DemoASP.Services.Interfaces;
-using GamesDataAccessLayer.Services;
+﻿using DAL.Interfaces;
+using DAL.Models;
+using DAL.Models.Enums;
+
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 
-namespace DemoASP.Services
+namespace DAL
 {
    public class UserRepository : BaseRepository<Guid, User>, IUserRepository
    {
@@ -30,7 +31,8 @@ namespace DemoASP.Services
          return new User { Id = (Guid)record["Id"],
                            UserName = (string)record["Username"],
                            Email = (string)record["Email"],
-                           RoleId = (int)record["RoleId"]
+                           RoleId = (int)record["RoleId"],
+                           Role = (Role)(int)record["RoleId"]
          };
       }
 
@@ -49,6 +51,27 @@ namespace DemoASP.Services
          }
          return u;
 
+      }
+      public IEnumerable<Game> GetFavGames(Guid userId)
+      {
+         string sql = "SELECT Id, Title, [Resume], DateSortie ,GenreId,[Label] FROM UserFavView WHERE UserId = @userId";
+         SqlParameter[] parameters =
+         {
+            GenerateParameter("userId",userId)
+         };
+         IEnumerable<Game> lg = ExecuteReader<Game>(sql, CommandType.Text, parameters, reader => new Game
+         {
+            Id = (int)reader["Id"],
+            Title = (string)reader["Title"],
+            Resume = reader["Resume"] == DBNull.Value ? null : (string)reader["Resume"],
+            Genres = new Genre { Id = (int)reader["GenreId"], Label = (string)reader["Label"] },
+            DateDeSortie = (DateTime)reader["DateSortie"]
+         });
+         if (lg is null)
+         {
+            lg = new List<Game>();
+         }
+         return lg;
       }
 
       public override bool Update(User entity)

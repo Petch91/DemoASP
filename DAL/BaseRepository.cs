@@ -1,5 +1,5 @@
-﻿using BibliothequeDAL.Repos;
-using DAL;
+﻿using DAL;
+using DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GamesDataAccessLayer.Services
+namespace DAL
 {
    public abstract class BaseRepository<TKey, TEntity> : DBService, IBaseRepository<TKey, TEntity> where TEntity : class
    {

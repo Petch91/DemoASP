@@ -1,6 +1,7 @@
-﻿using DemoASP.Models;
+﻿using DAL.Interfaces;
+using DAL.Models;
+using DemoASP.Models.Mappers;
 using DemoASP.Models.ViewModel;
-using DemoASP.Services.Interfaces;
 using DemoASP.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,16 @@ namespace DemoASP.Controllers
       public IActionResult Index(Guid id)
       {
          
+         return View(_userRepository.ReadOne(id));
+      }
+
+      public IActionResult List()
+      {
+         return View(_userRepository.ReadAll().Select(u => UserMapper.ToUserView(u)));
+      }
+
+      public IActionResult ChangeRole(Guid id)
+      {
          return View(_userRepository.ReadOne(id));
       }
 
@@ -66,6 +77,11 @@ namespace DemoASP.Controllers
       {
          _session.Logout();
          return RedirectToAction("Index", "Home");
+      }
+
+      public IActionResult FavList(Guid id) 
+      {
+         return View(_userRepository.GetFavGames(id));
       }
    }
 }

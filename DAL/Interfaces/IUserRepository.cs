@@ -1,13 +1,13 @@
-﻿using BibliothequeDAL.Repos;
-using DemoASP.Models;
+﻿using DAL.Models;
 
-namespace DemoASP.Services.Interfaces
+namespace DAL.Interfaces
 {
-   public interface IUserRepository : IBaseRepository<Guid,User>
+   public interface IUserRepository : IBaseRepository<Guid, User>
    {
 
       bool Register(string email, string password, string username);
 
       User Login(string email, string pwd);
+      IEnumerable<Game> GetFavGames(Guid userId);
    }
 }

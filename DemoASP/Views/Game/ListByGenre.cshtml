@@ -1,0 +1,65 @@
+﻿@using DemoASP.Tools;
+@inject SessionManager session;
+@model Dictionary<string,List<DAL.Models.Game>>;
+
+@{
+   ViewData["Title"] = "Par genre";
+}
+
+<h1>Par genres</h1>
+
+@{
+   if (session.ConnectedUser is not null)
+   {
+      <p>
+         <a asp-action="Index">Go Back</a>
+      </p>
+
+   }
+}
+
+@foreach(var genre in Model)
+{
+   <h3>@genre.Key</h3>
+   <table class="table">
+      <thead>
+         <tr>
+            <th>
+               Titre
+            </th>
+            <th>
+               Date de sortie
+            </th>
+            <th>
+               Résumé:
+            </th>
+         </tr>
+      </thead>
+      <tbody>
+         @foreach (var item in genre.Value)
+         {
+            <tr>
+               <td>
+                  @Html.DisplayFor(modelItem => item.Title)
+               </td>
+               <td>
+                  @Html.DisplayFor(modelItem => item.DateDeSortie)
+               </td>
+               <td>
+                  @Html.DisplayFor(modelItem => item.Resume)
+               </td>
+               <td>
+                  @if (session.ConnectedUser is not null)
+                     @Html.ActionLink("Edit", "Edit", new {  id=item.Id })
+
+                     |
+                     @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                     @if (session.ConnectedUser is not null)
+                     @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+
+                  </td>
+               </tr>
+         }
+      </tbody>
+   </table>
+}

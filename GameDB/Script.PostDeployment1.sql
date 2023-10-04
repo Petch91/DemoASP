@@ -9,11 +9,21 @@ Modèle de script de post-déploiement
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
-INSERT INTO GAME (Title, [Resume], DateSortie, Genre)
-       VALUES ('Final Fantasy 9','Best Game','2001-09-10','rpg')
+INSERT INTO GAME (Title, [Resume], DateSortie)
+       VALUES ('Final Fantasy 9','Best Game','2001-09-10')
 
-INSERT INTO GAME (Title, [Resume], DateSortie, Genre)
-       VALUES ('Fallout 2','Bethesda game','1995-10-22','aventure')
+INSERT INTO GAME (Title, [Resume], DateSortie)
+       VALUES ('Fallout 2','Bethesda game','1995-10-22')
+
+INSERT INTO Genre([Label])
+       VALUES ('RPG') 
+INSERT INTO Genre([Label])
+       VALUES ('Action') 
+
+INSERT INTO GameGenre(GameId,GenreId)
+       VALUES(1,1)
+INSERT INTO GameGenre(GameId,GenreId)
+       VALUES(2,2)
 
 exec UserRegister 'admin@gmail.com','Pouyette91','Admin'
 

@@ -1,6 +1,6 @@
+using DAL;
+using DAL.Interfaces;
 using DemoASP.Models;
-using DemoASP.Services;
-using DemoASP.Services.Interfaces;
 using DemoASP.Tools;
 using System.Data.SqlClient;
 
@@ -12,6 +12,7 @@ builder.Services.AddTransient<SqlConnection>(pc => new SqlConnection(builder.Con
 //builder.Services.AddSingleton<GameService>();
 builder.Services.AddScoped<IGameRepository,GameRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
