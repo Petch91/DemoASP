@@ -18,18 +18,13 @@ namespace DemoASP.Controllers
       }
       public IActionResult Index(Guid id)
       {
-         
-         return View(_userRepository.ReadOne(id));
+
+         return View(_userRepository.Get<User>(route: id.ToString(), token: _session.ConnectedUser.Token));
       }
 
       public IActionResult List()
       {
-         return View(_userRepository.ReadAll().Select(u => UserMapper.ToUserView(u)));
-      }
-
-      public IActionResult ChangeRole(Guid id)
-      {
-         return View(_userRepository.ReadOne(id));
+         return View(_userRepository.Get<IEnumerable<User>>().Select(u => u.ToUserView()));
       }
 
       public IActionResult Register()
@@ -43,11 +38,9 @@ namespace DemoASP.Controllers
          {
             return View(user);
          }
-         if (_userRepository.Register(user.Email, user.Password, user.Username))
-         {
-            return RedirectToAction("Index","Game");
-         }
-         return View();
+         _userRepository.Post<User>(new { user.Email, user.Password, user.Username }, route: "register");
+
+         return RedirectToAction("Index", "Home");
       }
       public IActionResult Login()
       {
@@ -62,11 +55,11 @@ namespace DemoASP.Controllers
          }
          try
          {
-            User u = _userRepository.Login(user.Email, user.Password);
+            User u = _userRepository.Post<User>(new { user.Email, user.Password },route: "login");
             _session.ConnectedUser = u;
-            return RedirectToAction("Index",new { id = _session.ConnectedUser.Id });
+            return RedirectToAction("Index", new { id = _session.ConnectedUser.Id });
          }
-         catch(Exception ex) 
+         catch (Exception ex)
          {
             TempData["error"] = ex.Message;
             return View();
@@ -79,9 +72,5 @@ namespace DemoASP.Controllers
          return RedirectToAction("Index", "Home");
       }
 
-      public IActionResult FavList(Guid id) 
-      {
-         return View(_userRepository.GetFavGames(id));
-      }
    }
 }

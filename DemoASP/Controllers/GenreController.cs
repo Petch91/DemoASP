@@ -15,7 +15,7 @@ namespace DemoASP.Controllers
       }
       public IActionResult List()
       {
-         return View(_genreRepository.ReadAll());
+         return View(_genreRepository.Get<IEnumerable<Genre>>());
       }
 
       public IActionResult Add() 
@@ -29,13 +29,13 @@ namespace DemoASP.Controllers
          {
             return View(g);
          }
-         _genreRepository.Create(g);
+         _genreRepository.Post<string>(g,route:"add");
          return RedirectToAction("List");
       }
 
       public IActionResult Delete(int id) 
       {
-         _genreRepository.Delete(id);
+         _genreRepository.Delete(route:id.ToString());
          return RedirectToAction("List");
       }
    }

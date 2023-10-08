@@ -1,4 +1,5 @@
 ﻿@using DAL.Interfaces;
+@using DAL.Models;
 @model DAL.Models.Game
 @inject IGenreRepository GenreRepo;
 @{
@@ -19,14 +20,9 @@
             <span asp-validation-for="Title" class="text-danger"></span>
          </div>
          <div class="form-group">
-            <label asp-for="DateDeSortie" class="control-label"></label>
-            <input asp-for="DateDeSortie" class="form-control" />
-            <span asp-validation-for="DateDeSortie" class="text-danger"></span>
-         </div>
-         <div class="form-group">
             <label asp-for="Genres" class="control-label"></label>
             <select asp-for="Genres" class="form-select" aria-label="@Model.Genres.Label">
-               @foreach (var item in GenreRepo.ReadAll())
+               @foreach (var item in GenreRepo.Get<IEnumerable<Genre>>())
                {
                   <option value="@item">@item.Label</option>
                }

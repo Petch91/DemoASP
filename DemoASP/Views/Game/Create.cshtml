@@ -1,9 +1,10 @@
 ﻿@using DAL.Interfaces;
+@using DAL.Models;
 @model DAL.Models.Game
 @inject IGenreRepository GenreRepo;
 
 @{
-    ViewData["Title"] = "Create";
+   ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
@@ -11,45 +12,42 @@
 <h4>Game</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateDeSortie" class="control-label"></label>
-                <input asp-for="DateDeSortie" class="form-control" />
-                <span asp-validation-for="DateDeSortie" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Genres" class="control-label"></label>
-               <select asp-for="Genres.Id" class="form-select" aria-label="Choisir Genre">
-               @foreach(var item in GenreRepo.ReadAll())
+   <div class="col-md-4">
+      <form asp-action="Create">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Genres" class="control-label"></label>
+            <select asp-for="Genres.Id" class="form-select" aria-label="Choisir Genre">
+               @foreach (var item in GenreRepo.Get<IEnumerable<Genre>>())
                {
                   <option value="@item.Id">@item.Label</option>
                }
-               </select>
-                <span asp-validation-for="Genres" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Resume" class="control-label"></label>
-                <input asp-for="Resume" class="form-control" />
-                <span asp-validation-for="Resume" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+            </select>
+            <span asp-validation-for="Genres.Id" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Resume" class="control-label"></label>
+            <input asp-for="Resume" class="form-control" />
+            <span asp-validation-for="Resume" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+         </div>
+      </form>
+   </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+   <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+   @{
+      await Html.RenderPartialAsync("_ValidationScriptsPartial");
+   }
 }

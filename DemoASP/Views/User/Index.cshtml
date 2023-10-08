@@ -12,6 +12,6 @@
 @{
    if (session.ConnectedUser is not null)
    {
-      @Html.ActionLink("Yours Favoris Games", "FavList", new {  id= session.ConnectedUser.Id })
+      <p><a asp-controller="Game" asp-action="FavList" asp-route-id="@session.ConnectedUser.Id">Go to your favoris games</a></p>
    }
 }

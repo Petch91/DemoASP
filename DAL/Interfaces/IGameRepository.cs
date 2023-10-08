@@ -3,9 +3,9 @@ using DAL.Models;
 
 namespace DAL.Interfaces
 {
-   public interface IGameRepository : IBaseRepository<int,Game>
+   public interface IGameRepository : IBaseRepository<Game>
    {
       Dictionary<string, List<Game>> GamesByGenre();
-      void AddGameToFavList(Guid userId, int gameId);
+      //void AddGameToFavList(Guid userId, int gameId);
    }
 }

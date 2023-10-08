@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-   public interface IGenreRepository : IBaseRepository<Genre>
+   public interface IGenreRepository : IBaseRepository<int,Genre>
    {
    }
 }

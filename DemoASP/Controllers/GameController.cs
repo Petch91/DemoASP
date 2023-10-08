@@ -18,11 +18,11 @@ namespace DemoASP.Controllers
       }
       public IActionResult Index()
       {
-         return View(_gameRepository.ReadAll());
+         return View(_gameRepository.Get<IEnumerable<Game>>());
       }
       public IActionResult Details(int id)
       {
-         return View(_gameRepository.ReadOne(id));
+         return View(_gameRepository.Get<Game>(route: $"{id}"));
       }
       [CustomAdmin]
       public IActionResult Create()
@@ -32,35 +32,40 @@ namespace DemoASP.Controllers
       [HttpPost]
       public IActionResult Create(Game g)
       {
-         _gameRepository.Create(g);
+         _gameRepository.Post<Game>(new {g.Title,IdGenre = g.Genres.Id,g.Resume},route:"add", token:_session.ConnectedUser.Token);
          return RedirectToAction("Index");
       }
       [CustomAdmin]
       public IActionResult Delete(int id)
       {
-         if (_gameRepository.Delete(id)) return RedirectToAction("Index");
+         if (_gameRepository.Delete(route: $"{id}")) return RedirectToAction("Index");
          return View();
       }
       [CustomModo]
       public IActionResult Edit(int id)
       {
-         return View(_gameRepository.ReadOne(id));
+         return View();
       }
       [HttpPost]
       public IActionResult Edit(Game g)
       {
-         _gameRepository.Update(g);
+         //_gameRepository.Update(g);
          return View();
       }
 
       public IActionResult ListByGenre()
       {
-         return View(_gameRepository.GamesByGenre());
+         return View(_gameRepository.Get<Dictionary<string,Game>>(route:"byGenre"));
       }
       public IActionResult AddFavGame(int id)
       {
-         _gameRepository.AddGameToFavList(_session.ConnectedUser.Id, id);
+         _gameRepository.Post<object>(null,route:$"addFavori/{id}/user/{_session.ConnectedUser.Id}", token: _session.ConnectedUser.Token);
          return RedirectToAction("Index");
+      }
+
+      public IActionResult FavList(Guid id)
+      {
+         return View(_gameRepository.Get<IEnumerable<Game>>(route: $"Favoris/{id}",token: _session.ConnectedUser.Token));
       }
    }
 }

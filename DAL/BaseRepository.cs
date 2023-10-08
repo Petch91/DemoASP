@@ -1,5 +1,7 @@
 ﻿using DAL;
 using DAL.Interfaces;
+using DAL.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,66 +12,168 @@ using System.Threading.Tasks;
 
 namespace DAL
 {
-   public abstract class BaseRepository<TKey, TEntity> : DBService, IBaseRepository<TKey, TEntity> where TEntity : class
+   public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
    {
 
-      //private string _connectionString = @"Data Source=DESKTOP-9B27V2B;Initial Catalog=GameDB2;Integrated Security=True;";
-      private string _table;
-      private string _idColName;
+      private readonly HttpClient _client;
+      private readonly string _url = "https://localhost:7079/api/";
 
-      protected BaseRepository(SqlConnection cnx, string table, string idCol) : base(cnx)
+      protected BaseRepository(HttpClient client)
       {
-         _table = table;
-         _idColName = idCol;
+         _client = client;
+         _client.BaseAddress = new Uri(_url);
       }
 
-      protected SqlParameter GenerateParameter(string name, object value)
+      public TResult Get<TResult>(string controllerName = "", string route ="", string token = "")
       {
-         return new SqlParameter(name, value ?? DBNull.Value);
-      }
-      public abstract TEntity Mapper(SqlDataReader record);
-
-      public abstract TEntity Create(TEntity entity);
-
-
-      public TEntity ReadOne(TKey id)
-      {
-         string sql = "SELECT * FROM " +
-                        _table +
-                      " WHERE " +
-                        _idColName +
-                      " = @id";
-         SqlParameter[] parameters =
+         if (!string.IsNullOrWhiteSpace(token))
          {
-            GenerateParameter("id",id),
-         };
-         TEntity entity = ExecuteReaderOneElement<TEntity>(sql, CommandType.Text, parameters, reader => Mapper(reader));
-         return entity;
-      }
-
-      public IEnumerable<TEntity> ReadAll()
-      {
-         string sql = "SELECT * FROM " + _table;
-
-         IEnumerable<TEntity> entities = ExecuteReader<TEntity>(sql, CommandType.Text, reader => Mapper(reader));
-         return entities;
-      }
-
-      public abstract bool Update(TEntity entity);
-
-
-      public bool Delete(TKey id)
-      {
-         string sql = "DELETE FROM " +
-               _table +
-             " WHERE " +
-               _idColName +
-             " = @id";
-         SqlParameter[] parameters =
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+         }
+         if (string.IsNullOrWhiteSpace(controllerName))
          {
-            GenerateParameter("id",id),
-         };
-         return ExecuteNonQuery(sql, CommandType.Text, parameters) != 0;
+            controllerName = typeof(TEntity).Name;
+         }
+         using (HttpResponseMessage response = _client.GetAsync(controllerName + (route is not null ? "/" + route : "")).Result)
+         {
+            TResult entity = default;
+            try
+            {
+               if (response.IsSuccessStatusCode)
+               {
+                  string json = response.Content.ReadAsStringAsync().Result;
+                  entity = JsonConvert.DeserializeObject<TResult>(json);
+               }
+               else throw new Exception("erreur");
+               return entity;
+            }
+            catch (Exception)
+            {
+
+               throw new Exception(response.StatusCode.ToString());
+            }
+
+         }
+      }
+
+
+
+
+      public bool Delete(string controllerName = "", string route = "", string token = "")
+      {
+         if (!string.IsNullOrWhiteSpace(token))
+         {
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+         }
+         if (string.IsNullOrWhiteSpace(controllerName))
+         {
+            controllerName = typeof(TEntity).Name;
+         }
+         using (HttpResponseMessage response = _client.DeleteAsync(controllerName + (route is not null ? "/" + route : "")).Result)
+         {
+
+               if (response.IsSuccessStatusCode)
+               {
+                  return true;
+               }
+               return false;
+
+         }
+      }
+
+
+      public TResult Post<TResult>(object entity, string controllerName = "", string route = "", string token="")
+      {
+         HttpContent content = new StringContent(JsonConvert.SerializeObject(entity), Encoding.UTF8, "application/json");
+         Console.WriteLine(content);
+         if (!string.IsNullOrWhiteSpace(token))
+         {
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+         }
+         if (string.IsNullOrWhiteSpace(controllerName))
+         {
+            controllerName = typeof(TEntity).Name;
+         }
+         using (HttpResponseMessage response = _client.PostAsync(controllerName + (route is not null ? "/" + route : ""), content).Result)
+         {
+            TResult entityReponse = default;
+            try
+            {
+               if (response.IsSuccessStatusCode)
+               {
+                  string json = response.Content.ReadAsStringAsync().Result;
+                  entityReponse = JsonConvert.DeserializeObject<TResult>(json);
+                  return entityReponse;
+               }
+               else
+               { throw new Exception(response.StatusCode.ToString()); }
+            }
+            catch (Exception)
+            {
+
+               throw new Exception(response.StatusCode.ToString());
+            }
+         }
+
       }
    }
 }
+
+
+//public abstract TEntity Create(TEntity entity);
+
+
+//public TEntity ReadOne(TKey id, string controllerName = "")
+//{
+//   if (string.IsNullOrWhiteSpace(controllerName))
+//   {
+//      controllerName = typeof(TEntity).Name;
+//   }
+//   using (HttpResponseMessage response = _client.GetAsync(controllerName + "/" + id).Result)
+//   {
+//      TEntity entity = default;
+//      try
+//      {
+//         if (response.IsSuccessStatusCode)
+//         {
+//            string json = response.Content.ReadAsStringAsync().Result;
+//            entity = JsonConvert.DeserializeObject<TEntity>(json);
+//         }
+//         return entity;
+//      }
+//      catch (Exception)
+//      {
+
+//         throw new Exception(response.StatusCode.ToString());
+//      }
+
+//   }
+//}
+//public IEnumerable<TEntity> ReadAll(string controllerName = "")
+//{
+//   if (string.IsNullOrWhiteSpace(controllerName))
+//   {
+//      controllerName = typeof(TEntity).Name;
+//   }
+//   using (HttpResponseMessage response = _client.GetAsync(controllerName).Result)
+//   {
+//      IEnumerable<TEntity> entities = default;
+//      try
+//      {
+//         if (response.IsSuccessStatusCode)
+//         {
+//            string json = response.Content.ReadAsStringAsync().Result;
+//            entities = JsonConvert.DeserializeObject<IEnumerable<TEntity>>(json);
+//         }
+//         return entities;
+//      }
+//      catch (Exception)
+//      {
+
+//         throw new Exception(response.StatusCode.ToString());
+//      }
+
+//   }
+//}
+
+//public abstract bool Update(TEntity entity);
